@@ -20,3 +20,6 @@ runs/
 .vscode/
 .idea/
 .DS_Store
+
+# Roteiros e anotações pessoais
+roteiro*.md
