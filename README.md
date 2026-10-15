@@ -151,7 +151,7 @@ Para testar o envio em lote das imagens de amostra com a API ativa:
 
 O planejamento e gerenciamento de todas as etapas foi estruturado no **Trello** utilizando o fluxo Kanban clássico:
 * **Colunas:** `Backlog` ➔ `To Do` ➔ `Doing` ➔ `Blocked` ➔ `Review` ➔ `Done`.
-* **Link Público do Quadro:** `[INSERIR_AQUI_O_LINK_DO_SEU_QUADRO_TRELLO]`
+* **Link do Quadro Kanban:** [SupermarketVision no Trello](https://trello.com/invite/b/6ad156713c09729e4de9ebb0/ATTI7e61be643e8cc384bed1c8005e38b42574627C27/supermarketvision-deteccao-de-objetos)
 * **Acesso concedido para:** `welington.souza@edu.sc.senai.br`
 
 ---
