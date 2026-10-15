@@ -6,7 +6,8 @@ Microserviço backend para detecção de objetos em imagens de supermercado via 
 from contextlib import asynccontextmanager
 from typing import Dict, Any
 from fastapi import FastAPI, UploadFile, File, HTTPException, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.schemas import DetectionResponse
 from app.detector import ObjectDetector
@@ -41,14 +42,25 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Montagem de arquivos estáticos para a interface Web e para as amostras de teste
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/samples", StaticFiles(directory="data/samples"), name="samples")
 
-@app.get("/", summary="Health Check e Boas-Vindas")
-async def root() -> Dict[str, Any]:
-    """Rota raiz para verificar se a API está online e pronta para uso."""
+
+@app.get("/", summary="Dashboard Interativo", include_in_schema=False)
+async def dashboard():
+    """Serve a interface gráfica para upload e rotulagem visual de imagens."""
+    return FileResponse("app/static/index.html")
+
+
+@app.get("/health", summary="Health Check e Boas-Vindas")
+async def health_check() -> Dict[str, Any]:
+    """Rota para verificação programática do status da API."""
     return {
         "status": "online",
         "message": "SupermarketVision API está operacional!",
         "docs_url": "/docs",
+        "dashboard_url": "/",
         "endpoint_inferencia": "/detect (método POST)",
         "modelo": "YOLOv8 Nano (Ultralytics)",
         "autor": "Leandro Spricigo"
