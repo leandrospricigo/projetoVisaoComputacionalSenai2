@@ -1,0 +1,22 @@
+# Ambientes virtuais
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ultralytics / YOLO runs e logs
+runs/
+*.pt.cache
+
+# Dados temporários ou zips pesados
+*.zip
+*.tar.gz
+
+# IDEs e sistema operacional
+.vscode/
+.idea/
+.DS_Store

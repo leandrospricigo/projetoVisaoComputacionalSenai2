@@ -1,0 +1,14 @@
+# Backend e API
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+python-multipart>=0.0.9
+pydantic>=2.0.0
+
+# Visão Computacional e YOLO
+ultralytics>=8.2.0
+pillow>=10.0.0
+pyyaml>=6.0.0
+
+# Utilitário para download de datasets
+roboflow>=1.1.0
+requests>=2.31.0
