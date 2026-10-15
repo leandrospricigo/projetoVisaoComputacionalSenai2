@@ -11,9 +11,18 @@ client = TestClient(app)
 
 
 def test_root_endpoint():
-    """Valida se a rota raiz responde com status 200 e mensagem de online."""
+    """Valida se a rota raiz responde com status 200 e carrega a interface HTML."""
     with client:
         response = client.get("/")
+        assert response.status_code == 200
+        assert "SupermarketVision" in response.text
+        assert "detection-canvas" in response.text
+
+
+def test_health_endpoint():
+    """Valida se a rota /health responde com status 200 e payload JSON."""
+    with client:
+        response = client.get("/health")
         assert response.status_code == 200
         dados = response.json()
         assert dados["status"] == "online"

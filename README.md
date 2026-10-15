@@ -80,9 +80,10 @@ A família **YOLO (You Only Look Once)** é o estado da arte para detecção de 
    uvicorn app.main:app --reload
    ```
 
-5. **Acessar a documentação interativa (Swagger UI):**
-   * Abra seu navegador em: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-   * Documentação alternativa ReDoc: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+5. **Acessar a aplicação no navegador:**
+   * **Dashboard Web Interativo:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/) (Permite upload, amostras rápidas e desenho das bounding boxes em Canvas).
+   * **Documentação Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+   * **Documentação ReDoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
 ---
 
@@ -165,4 +166,5 @@ O desenvolvimento seguiu rigorosamente o padrão **GitFlow**, com commits concis
   * `feature/setup-project`: Configuração inicial de ambiente, `.gitignore` e dependências.
   * `feature/dataset-prep`: Seleção e validação das classes e imagens de amostra.
   * `feature/api-fastapi`: Implementação do microserviço FastAPI e esquemas Pydantic.
+  * `feature/frontend-ui`: Desenvolvimento da interface web com canvas para rotulagem visual.
   * `feature/docs-readme`: Documentação completa do projeto e guias de execução.

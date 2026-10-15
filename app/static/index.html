@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupermarketVision AI - Detecção de Objetos</title>
+    <meta name="description" content="Demonstração interativa do sistema de detecção de itens de supermercado utilizando FastAPI e YOLOv8.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="brand-icon">🛒</div>
+                <div class="brand-text">
+                    <h1>SupermarketVision <span class="brand-badge">AI</span></h1>
+                    <p class="brand-subtitle">Detecção Inteligente de Itens em Tempo Real</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">FastAPI + YOLOv8 Online</span>
+                </div>
+                <a href="/docs" target="_blank" class="nav-btn" id="btn-swagger">
+                    <span>Swagger API</span> ↗
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-grid">
+            <!-- Sidebar: Controls & Upload -->
+            <section class="control-panel">
+                <div class="card panel-card">
+                    <h2 class="card-title">1. Selecionar Imagem</h2>
+                    <p class="card-description">Faça o upload de uma foto ou escolha uma amostra de supermercado.</p>
+
+                    <!-- Dropzone -->
+                    <div class="dropzone" id="dropzone">
+                        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" hidden>
+                        <div class="dropzone-content">
+                            <div class="dropzone-icon">📷</div>
+                            <p class="dropzone-text"><strong>Arraste uma imagem</strong> ou clique para procurar</p>
+                            <span class="dropzone-hint">Formatos suportados: JPG, PNG, WEBP</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Samples -->
+                    <div class="samples-section">
+                        <label class="section-label">Ou teste com uma amostra rápida:</label>
+                        <div class="samples-grid" id="samples-container">
+                            <button class="sample-pill" data-src="/samples/maca.jpg" id="sample-maca">🍎 Maçã</button>
+                            <button class="sample-pill" data-src="/samples/banana.jpg" id="sample-banana">🍌 Banana</button>
+                            <button class="sample-pill" data-src="/samples/laranja.jpg" id="sample-laranja">🍊 Laranja</button>
+                            <button class="sample-pill" data-src="/samples/cenoura.jpg" id="sample-cenoura">🥕 Cenoura</button>
+                            <button class="sample-pill" data-src="/samples/brocolis.jpg" id="sample-brocolis">🥦 Brócolis</button>
+                            <button class="sample-pill" data-src="/samples/garrafa.jpg" id="sample-garrafa">🍾 Garrafa</button>
+                            <button class="sample-pill" data-src="/samples/pizza.jpg" id="sample-pizza">🍕 Pizza</button>
+                            <button class="sample-pill" data-src="/samples/sanduiche.jpg" id="sample-sanduiche">🥪 Sanduíche</button>
+                            <button class="sample-pill" data-src="/samples/donut.jpg" id="sample-donut">🍩 Donut</button>
+                            <button class="sample-pill" data-src="/samples/bolo.jpg" id="sample-bolo">🎂 Bolo</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button class="btn-primary" id="btn-detect" disabled>
+                        <span class="btn-icon">⚡</span>
+                        <span class="btn-text">Detectar Objetos na Imagem</span>
+                        <span class="spinner" id="btn-spinner" hidden></span>
+                    </button>
+                </div>
+
+                <!-- Info Card -->
+                <div class="card info-card">
+                    <h3 class="info-title">Sobre a Arquitetura</h3>
+                    <ul class="info-list">
+                        <li><strong>Modelo:</strong> YOLOv8 Nano (~3.15M parâmetros)</li>
+                        <li><strong>Backend:</strong> FastAPI com rota <code>POST /detect</code></li>
+                        <li><strong>Inferência:</strong> ~75ms em CPU convencional</li>
+                        <li><strong>Retorno:</strong> JSON puro estruturado com bounding box</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Display Panel: Visual & Data -->
+            <section class="display-panel">
+                <!-- Metrics Bar -->
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <span class="metric-label">Status da API</span>
+                        <span class="metric-value text-success" id="metric-status">Pronto</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Tempo de Resposta</span>
+                        <span class="metric-value" id="metric-time">-- ms</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Itens Detectados</span>
+                        <span class="metric-value text-highlight" id="metric-count">0</span>
+                    </div>
+                </div>
+
+                <!-- Viewer Card -->
+                <div class="card viewer-card">
+                    <div class="viewer-header">
+                        <div class="viewer-tabs">
+                            <button class="tab-btn active" id="tab-visual">🖼️ Imagem Rotulada</button>
+                            <button class="tab-btn" id="tab-json">📄 Resposta JSON (API)</button>
+                        </div>
+                        <div class="viewer-actions">
+                            <button class="action-btn" id="btn-download" title="Baixar imagem rotulada" hidden>💾 Salvar Imagem</button>
+                            <button class="action-btn" id="btn-copy-json" title="Copiar JSON" hidden>📋 Copiar JSON</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 1: Canvas Viewer -->
+                    <div class="viewer-content" id="content-visual">
+                        <div class="canvas-wrapper" id="canvas-wrapper">
+                            <canvas id="detection-canvas"></canvas>
+                            <div class="empty-state" id="empty-state">
+                                <div class="empty-icon">🛒</div>
+                                <h3>Nenhuma imagem carregada</h3>
+                                <p>Selecione uma imagem à esquerda para visualizar as caixas delimitadoras e classes rotuladas.</p>
+                            </div>
+                        </div>
+
+                        <!-- Detected tags chip container -->
+                        <div class="chips-container" id="chips-container" hidden>
+                            <span class="chips-title">Classes Encontradas:</span>
+                            <div class="chips-list" id="chips-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: JSON Viewer -->
+                    <div class="viewer-content" id="content-json" hidden>
+                        <div class="code-wrapper">
+                            <pre><code id="json-code">// O retorno estruturado da API aparecerá aqui após a inferência...</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p><strong>SupermarketVision API</strong> • Desenvolvido por Leandro Spricigo • SENAI - Machine Learning e Visão Computacional</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
